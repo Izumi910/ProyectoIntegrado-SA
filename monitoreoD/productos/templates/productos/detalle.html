@@ -1,0 +1,14 @@
+{% extends 'productos/base.html' %}
+{% block title %}Detalle de Producto{% endblock %}
+{% block content %}
+<h2>{{ producto.nombre }}</h2>
+<ul class="list-group">
+    <li class="list-group-item"><b>SKU:</b> {{ producto.sku }}</li>
+    <li class="list-group-item"><b>Categoría:</b> {{ producto.categoria }}</li>
+    <li class="list-group-item"><b>Descripción:</b> {{ producto.descripcion }}</li>
+    <li class="list-group-item"><b>Precio:</b> {{ producto.precio_venta }}</li>
+    <!-- Agrega más campos según tu modelo -->
+</ul>
+<a href="{% url 'productos:editar' producto.pk %}" class="btn btn-warning mt-2">Editar</a>
+<a href="{% url 'productos:lista' %}" class="btn btn-secondary mt-2">Volver</a>
+{% endblock %}

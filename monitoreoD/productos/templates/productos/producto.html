@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Producto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1em;}
+        th, td { padding: 0.75em; border-bottom: 1px solid #eee; text-align: left;}
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Información del producto</h1>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ producto.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Lote</th>
+                <td>{{ producto.lote }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de Vencimiento</th>
+                <td>{{ producto.fecha_vencimiento }}</td>
+            </tr>
+            <tr>
+                <th>Stock</th>
+                <td>{{ producto.stock }}</td>
+            </tr>
+            <tr>
+                ir a <a href="/">Inicio</a>
+            </tr>
+        
+    </div>
+</body>
+</html>

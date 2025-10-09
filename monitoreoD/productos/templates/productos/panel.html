@@ -1,0 +1,8 @@
+{% extends 'productos/base.html' %}
+{% block title %}Panel de Productos{% endblock %}
+{% block content %}
+<h2>Panel de Productos</h2>
+<a href="{% url 'productos:crear' %}" class="btn btn-primary">Crear Producto</a>
+<a href="{% url 'productos:lista' %}" class="btn btn-secondary">Ver Productos</a>
+<!-- Puedes agregar más accesos rápidos o estadísticas aquí -->
+{% endblock %}

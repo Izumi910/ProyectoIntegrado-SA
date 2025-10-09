@@ -1,0 +1,14 @@
+{% extends 'proveedores/base.html' %}
+{% block title %}Detalle de Proveedor{% endblock %}
+{% block content %}
+<h2>{{ proveedor.razon_social }}</h2>
+<ul class="list-group">
+    <li class="list-group-item"><b>RUT:</b> {{ proveedor.rut_nif }}</li>
+    <li class="list-group-item"><b>Email:</b> {{ proveedor.email }}</li>
+    <li class="list-group-item"><b>Teléfono:</b> {{ proveedor.telefono }}</li>
+    <li class="list-group-item"><b>Estado:</b> {{ proveedor.estado }}</li>
+    <!-- Agrega más campos si quieres -->
+</ul>
+<a href="{% url 'proveedores:editar' proveedor.pk %}" class="btn btn-warning mt-2">Editar</a>
+<a href="{% url 'proveedores:lista' %}" class="btn btn-secondary mt-2">Volver</a>
+{% endblock %}

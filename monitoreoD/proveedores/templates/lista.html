@@ -1,0 +1,28 @@
+{% extends 'proveedores/base.html' %}
+{% block title %}Lista de Proveedores{% endblock %}
+{% block content %}
+<h1>Proveedores</h1>
+<a href="{% url 'proveedores:crear' %}" class="btn btn-primary mb-2">Crear Proveedor</a>
+<table class="table table-striped">
+    <tr>
+        <th>RUT</th>
+        <th>Razón Social</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Acciones</th>
+    </tr>
+    {% for proveedor in proveedores %}
+    <tr>
+        <td>{{ proveedor.rut_nif }}</td>
+        <td>{{ proveedor.razon_social }}</td>
+        <td>{{ proveedor.email }}</td>
+        <td>{{ proveedor.telefono }}</td>
+        <td>
+            <a href="{% url 'proveedores:detalle' proveedor.pk %}" class="btn btn-info btn-sm">Ver</a>
+            <a href="{% url 'proveedores:editar' proveedor.pk %}" class="btn btn-warning btn-sm">Editar</a>
+            <a href="{% url 'proveedores:eliminar' proveedor.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

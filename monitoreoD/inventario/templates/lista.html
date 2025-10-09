@@ -1,0 +1,28 @@
+{% extends 'inventario/base.html' %}
+{% block title %}Movimientos de Inventario{% endblock %}
+{% block content %}
+<h1>Movimientos de Inventario</h1>
+<a href="{% url 'inventario:crear' %}" class="btn btn-primary mb-2">Nuevo Movimiento</a>
+<table class="table table-striped">
+    <tr>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Acciones</th>
+    </tr>
+    {% for movimiento in movimientos %}
+    <tr>
+        <td>{{ movimiento.fecha }}</td>
+        <td>{{ movimiento.tipo }}</td>
+        <td>{{ movimiento.producto }}</td>
+        <td>{{ movimiento.cantidad }}</td>
+        <td>
+            <a href="{% url 'inventario:detalle' movimiento.pk %}" class="btn btn-info btn-sm">Ver</a>
+            <a href="{% url 'inventario:editar' movimiento.pk %}" class="btn btn-warning btn-sm">Editar</a>
+            <a href="{% url 'inventario:eliminar' movimiento.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

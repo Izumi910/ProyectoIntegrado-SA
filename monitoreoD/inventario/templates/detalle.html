@@ -1,0 +1,19 @@
+{% extends 'productos/base.html' %}
+{% block title %}Detalle de Movimiento{% endblock %}
+{% block content %}
+<h2>Detalle de Movimiento</h2>
+<ul class="list-group">
+    <li class="list-group-item"><b>ID:</b> {{ movimiento.id }}</li>
+    <li class="list-group-item"><b>Producto:</b> {{ movimiento.producto }}</li>
+    <li class="list-group-item"><b>Tipo:</b> {{ movimiento.tipo }}</li>
+    <li class="list-group-item"><b>Cantidad:</b> {{ movimiento.cantidad }}</li>
+    <li class="list-group-item"><b>Fecha:</b> {{ movimiento.fecha }}</li>
+    <li class="list-group-item"><b>Proveedor:</b> {{ movimiento.proveedor }}</li>
+    <li class="list-group-item"><b>Lote:</b> {{ movimiento.lote }}</li>
+    <li class="list-group-item"><b>Serie:</b> {{ movimiento.serie }}</li>
+    <li class="list-group-item"><b>Fecha de Vencimiento:</b> {{ movimiento.fecha_vencimiento }}</li>
+    <li class="list-group-item"><b>Observaciones:</b> {{ movimiento.observaciones }}</li>
+</ul>
+<a href="{% url 'inventario:editar' movimiento.pk %}" class="btn btn-warning mt-2">Editar</a>
+<a href="{% url 'inventario:lista' %}" class="btn btn-secondary mt-2">Volver</a>
+{% endblock %}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Página de Inicio</title>
+</head>
+<body>
+    <h1>Bienvenida a la página de inicio</h1>
+    <p>Esto viene de <code>producto/inicio.html</code></p>
+
+    <a href="/panel/">Ir al panel de productos</a>
+    <h2>Lista de Productos</h2>
+    <ul>
+        {% for d in productos %}
+            <li>
+                <a href="{% url 'producto' d.id %}">{{ d.nombre }} - {{ d.lote }}</a>
+            </li>
+        {% endfor %}
+
+    </ul>
+
+</body>
+</html>

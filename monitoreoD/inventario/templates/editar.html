@@ -1,0 +1,11 @@
+{% extends 'productos/base.html' %}
+{% block title %}Editar Movimiento{% endblock %}
+{% block content %}
+<h2>Editar Movimiento de Inventario</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a href="{% url 'inventario:lista' %}" class="btn btn-secondary">Volver</a>
+</form>
+{% endblock %}
