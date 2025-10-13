@@ -20,8 +20,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('productos/', include('productos.urls')),      # Todas las rutas de productos
-    path('usuarios/', include('usuarios.urls')),        # Todas las rutas de usuarios
-    path('proveedores/', include('proveedores.urls')),  # Todas las rutas de proveedores
-    path('inventario/', include('inventario.urls')),    # Todas las rutas de inventario
-] 
+    path('', include('productos.urls')),      # Todas las rutas de productos
+    path('', include('usuarios.urls')),        # Todas las rutas de usuarios
+    path('', include('proveedores.urls')),  # Todas las rutas de proveedores
+    path('', include('inventario.urls')),    # Todas las rutas de inventario
+]

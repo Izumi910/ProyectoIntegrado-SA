@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 class UsuarioCreationForm(UserCreationForm):
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'nombres', 'apellidos', 'telefono', 'rol', 'estado', 'mfa_habilitado', 'area', 'observaciones']
+        fields = ['username', 'email', 'telefono', 'estado', 'mfa_habilitado', 'area', 'observaciones']
     def clean_email(self):
         email = self.cleaned_data['email']
         if Usuario.objects.filter(email=email).exists():
@@ -15,7 +15,7 @@ class UsuarioCreationForm(UserCreationForm):
 class UsuarioChangeForm(UserChangeForm):
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'nombres', 'apellidos', 'telefono', 'rol', 'estado', 'mfa_habilitado', 'area', 'observaciones']
+        fields = ['username', 'email', 'telefono', 'estado', 'mfa_habilitado', 'area', 'observaciones']
     def clean_email(self):
         email = self.cleaned_data['email']
         if Usuario.objects.filter(email=email).exists():
