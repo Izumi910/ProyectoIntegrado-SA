@@ -1,11 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Proveedor, ProveedorProducto
 from .forms import ProveedorForm, ProveedorProductoForm
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def lista_proveedores(request):
     proveedores = Proveedor.objects.all()
     return render(request, 'proveedores/lista.html', {'proveedores': proveedores})
 
+@login_required
 def crear_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -16,6 +19,7 @@ def crear_proveedor(request):
         form = ProveedorForm()
     return render(request, 'proveedores/crear.html', {'form': form})
 
+@login_required
 def editar_proveedor(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
     if request.method == 'POST':
@@ -27,6 +31,7 @@ def editar_proveedor(request, pk):
         form = ProveedorForm(instance=proveedor)
     return render(request, 'proveedores/editar.html', {'form': form, 'proveedor': proveedor})
 
+@login_required
 def eliminar_proveedor(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
     if request.method == 'POST':
@@ -34,16 +39,18 @@ def eliminar_proveedor(request, pk):
         return redirect('proveedores:lista')
     return render(request, 'proveedores/eliminar.html', {'proveedor': proveedor})
 
+@login_required
 def detalle_proveedor(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
     return render(request, 'proveedores/detalle.html', {'proveedor': proveedor})
 
 
-
+@login_required
 def lista_proveedor_productos(request):
     relaciones = ProveedorProducto.objects.all()
     return render(request, 'proveedores/lista_proveedor_productos.html', {'relaciones': relaciones})
 
+@login_required
 def crear_proveedor_producto(request):
     if request.method == 'POST':
         form = ProveedorProductoForm(request.POST)
@@ -54,6 +61,7 @@ def crear_proveedor_producto(request):
         form = ProveedorProductoForm()
     return render(request, 'proveedores/crear_proveedor_producto.html', {'form': form})
 
+@login_required
 def editar_proveedor_producto(request, pk):
     relacion = get_object_or_404(ProveedorProducto, pk=pk)
     if request.method == 'POST':

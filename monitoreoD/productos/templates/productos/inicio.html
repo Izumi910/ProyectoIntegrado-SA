@@ -13,7 +13,7 @@
     <ul>
         {% for d in productos %}
             <li>
-                <a href="{% url 'producto' d.id %}">{{ d.nombre }} - {{ d.lote }}</a>
+                <a href="{% url 'productos:producto' d.pk %}">{{ d.nombre }} - {{ d.descripcion }} - ${{ d.precio }}</a>
             </li>
         {% endfor %}
 
