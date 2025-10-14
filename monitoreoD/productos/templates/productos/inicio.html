@@ -1,23 +1,52 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Página de Inicio</title>
-</head>
-<body>
-    <h1>Bienvenida a la página de inicio</h1>
-    <p>Esto viene de <code>producto/inicio.html</code></p>
-
-    <a href="/panel/">Ir al panel de productos</a>
-    <h2>Lista de Productos</h2>
-    <ul>
-        {% for d in productos %}
-            <li>
-                <a href="{% url 'productos:producto' d.pk %}">{{ d.nombre }} - {{ d.descripcion }} - ${{ d.precio }}</a>
-            </li>
-        {% endfor %}
-
-    </ul>
-
-</body>
-</html>
+{% extends 'productos/base.html' %}
+{% block title %}Página de Inicio{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="text-center mb-4">
+                <h1 class="fw-bold"><i class="bi bi-house-door"></i> Bienveni@ a la página de inicio</h1>
+                <p class="lead">Esto viene de <code>productos/inicio.html</code></p>
+                <a href="{% url 'productos:panel_productos' %}" class="btn btn-success btn-lg mt-2">
+                    <i class="bi bi-grid"></i> Ir al panel de productos
+                </a>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-box-seam"></i> Lista de Productos</h4>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in productos %}
+                            <tr>
+                                <td>{{ d.nombre }}</td>
+                                <td>{{ d.descripcion }}</td>
+                                <td>${{ d.precio }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'productos:producto' d.pk %}" class="btn btn-info btn-sm" title="Ver">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No hay productos registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
