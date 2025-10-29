@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Lilis Dulcería</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        body {
+            background: #dc143c;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background: #dc143c !important;
+            color: white;
+            border: none;
+        }
+        
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-control:focus {
+            border-color: #dc143c;
+            box-shadow: 0 0 0 0.2rem rgba(220, 20, 60, 0.25);
+        }
+        
+        .btn-primary {
+            background: #dc143c;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #b91c3c;
+        }
+        
+        .brand-title {
+            color: white;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="text-center mb-4">
+                    <h1 class="brand-title">Lilis Dulcería</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4 class="mb-0">Iniciar Sesión</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Usuario</label>
+                                <input type="text" name="username" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="remember_me" class="form-check-input">
+                                    <label class="form-check-label">Recordarme</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                Iniciar Sesión
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-3">
+                            <a href="{% url 'usuarios:password_reset' %}" class="text-decoration-none">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

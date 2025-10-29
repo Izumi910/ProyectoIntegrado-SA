@@ -18,10 +18,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
+
     path('admin/', admin.site.urls),
-    path('', include('productos.urls')),      # Todas las rutas de productos
+    path('productos/', include('productos.urls')),      # Todas las rutas de productos
     path('', include('usuarios.urls')),        # Todas las rutas de usuarios
-    path('', include('proveedores.urls')),  # Todas las rutas de proveedores
-    path('', include('inventario.urls')),    # Todas las rutas de inventario
+    path('proveedores/', include('proveedores.urls')),  # Todas las rutas de proveedores
+    path('inventario/', include('inventario.urls')),    # Todas las rutas de inventario
 ]

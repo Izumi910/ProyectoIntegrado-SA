@@ -1,4 +1,4 @@
-{% extends 'proveedores/base.html' %}
+{% extends 'base.html' %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 <h2>{{ title }}</h2>
@@ -6,6 +6,6 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="{% url 'proveedores:lista' %}" class="btn btn-secondary">Volver</a>
+    <a href="{% url 'proveedores:proveedores_lista' %}" class="btn btn-secondary">Volver</a>
 </form>
 {% endblock %}

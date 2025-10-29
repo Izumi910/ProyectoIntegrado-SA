@@ -1,4 +1,4 @@
-{% extends 'proveedores/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Detalle de Proveedor{% endblock %}
 {% block content %}
 <h2>{{ proveedor.razon_social }}</h2>
@@ -9,6 +9,6 @@
     <li class="list-group-item"><b>Estado:</b> {{ proveedor.estado }}</li>
     <!-- Agrega más campos si quieres -->
 </ul>
-<a href="{% url 'proveedores:editar' proveedor.pk %}" class="btn btn-warning mt-2">Editar</a>
-<a href="{% url 'proveedores:lista' %}" class="btn btn-secondary mt-2">Volver</a>
+<a href="{% url 'proveedores:proveedores_editar' proveedor.pk %}" class="btn btn-warning mt-2">Editar</a>
+<a href="{% url 'proveedores:proveedores_lista' %}" class="btn btn-secondary mt-2">Volver</a>
 {% endblock %}

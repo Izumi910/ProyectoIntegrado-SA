@@ -1,4 +1,4 @@
-{% extends 'productos/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Detalle de Movimiento{% endblock %}
 {% block content %}
 <h2>Detalle de Movimiento</h2>
@@ -14,6 +14,6 @@
     <li class="list-group-item"><b>Fecha de Vencimiento:</b> {{ movimiento.fecha_vencimiento }}</li>
     <li class="list-group-item"><b>Observaciones:</b> {{ movimiento.observaciones }}</li>
 </ul>
-<a href="{% url 'inventario:editar' movimiento.pk %}" class="btn btn-warning mt-2">Editar</a>
-<a href="{% url 'inventario:lista' %}" class="btn btn-secondary mt-2">Volver</a>
+<a href="{% url 'inventario:inventario_editar' movimiento.pk %}" class="btn btn-warning mt-2">Editar</a>
+<a href="{% url 'inventario:inventario_lista' %}" class="btn btn-secondary mt-2">Volver</a>
 {% endblock %}

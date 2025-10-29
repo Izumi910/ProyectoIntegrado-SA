@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Lista de Productos{% endblock %}
+{% block title %}Lista de Proveedores{% endblock %}
 {% block content %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -7,10 +7,10 @@
             <a href="{% url 'usuarios:dashboard' %}" class="btn btn-outline-secondary me-2">
                 <i class="bi bi-house"></i> Inicio
             </a>
-            <h2 class="d-inline mb-0"><i class="bi bi-box-seam"></i> Productos</h2>
+            <h2 class="d-inline mb-0"><i class="bi bi-truck"></i> Proveedores</h2>
         </div>
-        <a href="{% url 'productos:producto_crear' %}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Nuevo Producto
+        <a href="{% url 'proveedores:proveedores_crear' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nuevo Proveedor
         </a>
     </div>
     
@@ -18,7 +18,7 @@
     <div class="row mb-3">
         <div class="col-md-4">
             <form method="get" class="d-flex">
-                <input type="text" name="search" class="form-control" placeholder="Buscar productos..." value="{{ search }}">
+                <input type="text" name="search" class="form-control" placeholder="Buscar proveedores..." value="{{ search }}">
                 <input type="hidden" name="order_by" value="{{ order_by }}">
                 <input type="hidden" name="per_page" value="{{ per_page }}">
                 <button type="submit" class="btn btn-outline-secondary ms-2">
@@ -29,12 +29,12 @@
         <div class="col-md-4">
             <form method="get">
                 <select name="order_by" class="form-select" onchange="this.form.submit()">
-                    <option value="nombre" {% if order_by == 'nombre' %}selected{% endif %}>Nombre A-Z</option>
-                    <option value="-nombre" {% if order_by == '-nombre' %}selected{% endif %}>Nombre Z-A</option>
-                    <option value="sku" {% if order_by == 'sku' %}selected{% endif %}>SKU A-Z</option>
-                    <option value="-sku" {% if order_by == '-sku' %}selected{% endif %}>SKU Z-A</option>
-                    <option value="precio_venta" {% if order_by == 'precio_venta' %}selected{% endif %}>Precio Menor</option>
-                    <option value="-precio_venta" {% if order_by == '-precio_venta' %}selected{% endif %}>Precio Mayor</option>
+                    <option value="razon_social" {% if order_by == 'razon_social' %}selected{% endif %}>Razón Social A-Z</option>
+                    <option value="-razon_social" {% if order_by == '-razon_social' %}selected{% endif %}>Razón Social Z-A</option>
+                    <option value="rut_nif" {% if order_by == 'rut_nif' %}selected{% endif %}>RUT A-Z</option>
+                    <option value="-rut_nif" {% if order_by == '-rut_nif' %}selected{% endif %}>RUT Z-A</option>
+                    <option value="email" {% if order_by == 'email' %}selected{% endif %}>Email A-Z</option>
+                    <option value="ciudad" {% if order_by == 'ciudad' %}selected{% endif %}>Ciudad A-Z</option>
                 </select>
                 <input type="hidden" name="search" value="{{ search }}">
                 <input type="hidden" name="per_page" value="{{ per_page }}">
@@ -59,33 +59,35 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-success">
                     <tr>
-                        <th scope="col">SKU</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Categoría</th>
+                        <th scope="col">RUT</th>
+                        <th scope="col">Razón Social</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Teléfono</th>
                         <th scope="col" class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for producto in page_obj %}
+                    {% for proveedor in page_obj %}
                     <tr>
-                        <td>{{ producto.sku }}</td>
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.categoria }}</td>
+                        <td>{{ proveedor.rut_nif }}</td>
+                        <td>{{ proveedor.razon_social }}</td>
+                        <td>{{ proveedor.email }}</td>
+                        <td>{{ proveedor.telefono }}</td>
                         <td class="text-center">
-                            <a href="{% url 'productos:producto_detalle' producto.pk %}" class="btn btn-info btn-sm me-1" title="Ver">
+                            <a href="{% url 'proveedores:proveedores_detalle' proveedor.pk %}" class="btn btn-info btn-sm me-1" title="Ver">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a href="{% url 'productos:producto_editar' producto.pk %}" class="btn btn-warning btn-sm me-1" title="Editar">
+                            <a href="{% url 'proveedores:proveedores_editar' proveedor.pk %}" class="btn btn-warning btn-sm me-1" title="Editar">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a href="{% url 'productos:producto_eliminar' producto.pk %}" class="btn btn-danger btn-sm" title="Eliminar">
+                            <a href="{% url 'proveedores:proveedores_eliminar' proveedor.pk %}" class="btn btn-danger btn-sm" title="Eliminar">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center text-muted">No hay productos registrados.</td>
+                        <td colspan="5" class="text-center text-muted">No hay proveedores registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

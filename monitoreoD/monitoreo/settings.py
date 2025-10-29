@@ -42,7 +42,7 @@ ROOT_URLCONF = 'monitoreo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,6 +126,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
-LOGIN_REDIRECT_URL = 'usuarios:lista'
+LOGIN_REDIRECT_URL = 'usuarios:dashboard'
 
 LOGIN_URL = 'usuarios:login'
+
+LOGOUT_REDIRECT_URL = 'login'
+
+
+
+
+
+# Configuraciones de sesión
+
+# duración de la cookie de sesión (en segundos)
+SESSION_COOKIE_AGE = 60*60*2 # 2 horas 
+# sesión expira al cerrar el navegador?
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# cada vez que se hace una petición, se actualiza la expiración
+SESSION_SAVE_EVERY_REQUEST = False
+# seguridad de las cookies
+SESSION_COOKIE_SECURE = False # en producción con HTTPS
+# sólo enviar la cookie en el mismo sitio (protección CSRF) / Lax por defecto en Django
+SESSION_COOKIE_SAMESITE = 'Lax' # o 'Strict'/'None'(+Secure)
+
+# Configuración de Email para recuperación de contraseña
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Para desarrollo
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Para producción
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'tu-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'tu-contraseña-de-aplicación'
+DEFAULT_FROM_EMAIL = 'noreply@lilis.com'

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Lilis Dulcería{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="page-title">
+        Bienvenido a Lilis Dulcería
+    </h1>
+    <p class="lead text-muted">Sistema de Gestión Integral</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-header" style="background: var(--lilis-red); color: white;">
+                <h5 class="mb-0"><i class="bi bi-box-seam"></i> Productos</h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="card-text">Gestiona tu catálogo de productos</p>
+                <a href="/productos/vista/" class="btn btn-primary btn-sm">
+                    Ver Productos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-header" style="background: var(--lilis-red); color: white;">
+                <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Inventario</h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="card-text">Control de stock y movimientos</p>
+                <a href="/inventario/" class="btn btn-primary btn-sm">
+                    Ver Inventario
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-header" style="background: var(--lilis-red); color: white;">
+                <h5 class="mb-0"><i class="bi bi-truck"></i> Proveedores</h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="card-text">Administra tus proveedores</p>
+                <a href="/proveedores/" class="btn btn-primary btn-sm">
+                    Ver Proveedores
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-header" style="background: var(--lilis-red); color: white;">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Usuarios</h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="card-text">Gestiona el equipo de trabajo</p>
+                <a href="/usuarios/vista/" class="btn btn-primary btn-sm">
+                    Ver Usuarios
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-speedometer2" style="font-size: 3rem; color: var(--lilis-red);"></i>
+                <h3 class="mt-3 mb-3" style="color: var(--lilis-dark);">¡Gestión Eficiente!</h3>
+                <p class="lead text-muted">Administra tu dulcería de manera fácil y eficiente</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

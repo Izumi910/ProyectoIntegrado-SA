@@ -1,4 +1,4 @@
-{% extends 'productos/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Panel de Productos{% endblock %}
 {% block content %}
 <div class="container py-5">
@@ -10,7 +10,7 @@
                     <i class="bi bi-plus-circle display-4 text-success mb-2"></i>
                     <h5 class="card-title">Crear Producto</h5>
                     <p class="card-text">Agrega nuevos productos al inventario.</p>
-                    <a href="{% url 'productos:crear' %}" class="btn btn-success w-100">Crear Producto</a>
+                    <a href="{% url 'productos:producto_crear' %}" class="btn btn-success w-100">Crear Producto</a>
                 </div>
             </div>
         </div>
@@ -20,7 +20,7 @@
                     <i class="bi bi-box-seam display-4 text-primary mb-2"></i>
                     <h5 class="card-title">Ver Productos</h5>
                     <p class="card-text">Consulta y gestiona todos los productos registrados.</p>
-                    <a href="{% url 'productos:lista' %}" class="btn btn-primary w-100">Ver Productos</a>
+                    <a href="{% url 'productos:productos_lista' %}" class="btn btn-primary w-100">Ver Productos</a>
                 </div>
             </div>
         </div>
