@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load humanize %}
 {% block title %}Lista de Productos{% endblock %}
 {% block content %}
+{% csrf_token %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -9,16 +11,18 @@
             </a>
             <h2 class="d-inline mb-0"><i class="bi bi-box-seam"></i> Productos</h2>
         </div>
-        <a href="{% url 'productos:producto_crear' %}" class="btn btn-success">
+        {% if user.rol == 'ADMINISTRADOR' or user.puede_crear_productos %}
+        <a href="{% url 'productos:producto_crear' %}" class="btn btn-danger">
             <i class="bi bi-plus-circle"></i> Nuevo Producto
         </a>
+        {% endif %}
     </div>
     
     <!-- Controles de búsqueda, ordenamiento y paginación -->
     <div class="row mb-3">
         <div class="col-md-4">
             <form method="get" class="d-flex">
-                <input type="text" name="search" class="form-control" placeholder="Buscar productos..." value="{{ search }}">
+                <input type="text" id="searchInput" name="search" class="form-control" placeholder="Buscar productos..." value="{{ search }}">
                 <input type="hidden" name="order_by" value="{{ order_by }}">
                 <input type="hidden" name="per_page" value="{{ per_page }}">
                 <button type="submit" class="btn btn-outline-secondary ms-2">
@@ -40,28 +44,38 @@
                 <input type="hidden" name="per_page" value="{{ per_page }}">
             </form>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <form method="get">
                 <select name="per_page" class="form-select" onchange="this.form.submit()">
                     <option value="5" {% if per_page == '5' %}selected{% endif %}>5 por página</option>
-                    <option value="10" {% if per_page == '10' %}selected{% endif %}>10 por página</option>
-                    <option value="25" {% if per_page == '25' %}selected{% endif %}>25 por página</option>
-                    <option value="50" {% if per_page == '50' %}selected{% endif %}>50 por página</option>
+                    <option value="15" {% if per_page == '15' %}selected{% endif %}>15 por página</option>
+                    <option value="30" {% if per_page == '30' %}selected{% endif %}>30 por página</option>
                 </select>
                 <input type="hidden" name="search" value="{{ search }}">
                 <input type="hidden" name="order_by" value="{{ order_by }}">
             </form>
         </div>
+        {% if user.rol == 'ADMINISTRADOR' or user.puede_exportar_productos %}
+        <div class="col-md-1">
+            <a href="{% url 'productos:exportar_productos' %}?search={{ search }}&order_by={{ order_by }}" class="btn btn-outline-danger">
+                <i class="bi bi-file-earmark-excel"></i>
+            </a>
+        </div>
+        {% endif %}
     </div>
     
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-success">
+                <thead style="background: var(--lilis-red); color: white;">
                     <tr>
                         <th scope="col">SKU</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Categoría</th>
+                        <th scope="col">Marca</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Estado</th>
                         <th scope="col" class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -71,21 +85,35 @@
                         <td>{{ producto.sku }}</td>
                         <td>{{ producto.nombre }}</td>
                         <td>{{ producto.categoria }}</td>
+                        <td>{{ producto.marca|default:'-' }}</td>
+                        <td>${{ producto.precio_venta|floatformat:0|default:'0' }}</td>
+                        <td>{{ producto.stock|floatformat:0 }}</td>
+                        <td>
+                            <span class="badge {% if producto.estado == 'ACTIVO' %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+                                {{ producto.estado|default:'ACTIVO' }}
+                            </span>
+                        </td>
                         <td class="text-center">
                             <a href="{% url 'productos:producto_detalle' producto.pk %}" class="btn btn-info btn-sm me-1" title="Ver">
                                 <i class="bi bi-eye"></i>
                             </a>
+                            {% if user.rol == 'ADMINISTRADOR' or user.puede_editar_productos %}
                             <a href="{% url 'productos:producto_editar' producto.pk %}" class="btn btn-warning btn-sm me-1" title="Editar">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a href="{% url 'productos:producto_eliminar' producto.pk %}" class="btn btn-danger btn-sm" title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </a>
+                            {% endif %}
+                            {% if user.rol == 'ADMINISTRADOR' or user.puede_desactivar_productos %}
+                            <button type="button" class="btn {% if producto.estado == 'ACTIVO' %}btn-outline-danger{% else %}btn-danger{% endif %} btn-sm" 
+                                    title="{% if producto.estado == 'ACTIVO' %}Desactivar{% else %}Activar{% endif %}"
+                                    onclick="confirmToggleState('{% url 'productos:producto_toggle_estado' producto.pk %}', '{{ producto.nombre }}', '{{ producto.estado }}', 'el producto')">
+                                <i class="bi bi-toggle-{% if producto.estado == 'ACTIVO' %}off{% else %}on{% endif %}"></i>
+                            </button>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center text-muted">No hay productos registrados.</td>
+                        <td colspan="8" class="text-center text-muted">No hay productos registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -122,4 +150,59 @@
     </nav>
     {% endif %}
 </div>
+
+<script>
+let searchTimeout;
+const searchInput = document.getElementById('searchInput');
+const tableBody = document.querySelector('tbody');
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const searchTerm = this.value;
+        const orderBy = document.querySelector('[name="order_by"]').value;
+        const perPage = document.querySelector('[name="per_page"]').value;
+        
+        fetch(`?search=${encodeURIComponent(searchTerm)}&order_by=${orderBy}&per_page=${perPage}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            tableBody.innerHTML = '';
+            if (data.productos.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No hay productos registrados.</td></tr>';
+            } else {
+                data.productos.forEach(producto => {
+                    const row = `
+                        <tr>
+                            <td>${producto.sku}</td>
+                            <td>${producto.nombre}</td>
+                            <td>${producto.categoria}</td>
+                            <td>${producto.marca}</td>
+                            <td>${producto.precio_venta}</td>
+                            <td>${producto.stock}</td>
+                            <td><span class="badge ${producto.estado_class}">${producto.estado}</span></td>
+                            <td class="text-center">
+                                <a href="/productos/${producto.id}/" class="btn btn-info btn-sm me-1" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/productos/${producto.id}/editar/" class="btn btn-warning btn-sm me-1" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="/productos/toggle-estado/${producto.id}/" class="btn ${producto.estado === 'ACTIVO' ? 'btn-outline-danger' : 'btn-danger'} btn-sm" title="${producto.estado === 'ACTIVO' ? 'Desactivar' : 'Activar'}">
+                                    <i class="bi bi-toggle-${producto.estado === 'ACTIVO' ? 'off' : 'on'}"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }, 300);
+});
+</script>
 {% endblock %}

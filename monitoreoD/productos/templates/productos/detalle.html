@@ -1,14 +1,211 @@
 {% extends 'base.html' %}
-{% block title %}Detalle de Producto{% endblock %}
+{% load humanize %}
+{% block title %}Detalle de Producto - {{ producto.nombre }}{% endblock %}
 {% block content %}
-<h2>{{ producto.nombre }}</h2>
-<ul class="list-group">
-    <li class="list-group-item"><b>SKU:</b> {{ producto.sku }}</li>
-    <li class="list-group-item"><b>Categoría:</b> {{ producto.categoria }}</li>
-    <li class="list-group-item"><b>Descripción:</b> {{ producto.descripcion }}</li>
-    <li class="list-group-item"><b>Precio:</b> {{ producto.precio_venta }}</li>
-    <!-- Agrega más campos según tu modelo -->
-</ul>
-<a href="{% url 'productos:producto_editar' producto.pk %}" class="btn btn-warning mt-2">Editar</a>
-<a href="{% url 'productos:productos_lista' %}" class="btn btn-secondary mt-2">Volver</a>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: var(--lilis-red); color: white;">
+                    <h4 class="mb-0"><i class="bi bi-box-seam"></i> {{ producto.nombre }}</h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Información Básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-muted border-bottom pb-2"><i class="bi bi-info-circle"></i> Información Básica</h5>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Código SKU:</label>
+                            <p class="form-control-plaintext">{{ producto.sku }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Código EAN/UPC:</label>
+                            <p class="form-control-plaintext">{{ producto.ean_upc|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold">Nombre:</label>
+                            <p class="form-control-plaintext">{{ producto.nombre }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Categoría:</label>
+                            <p class="form-control-plaintext">{{ producto.categoria }}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Descripción:</label>
+                            <p class="form-control-plaintext">{{ producto.descripcion|default:"Sin descripción" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Detalles del Producto -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-muted border-bottom pb-2"><i class="bi bi-tag"></i> Detalles del Producto</h5>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Marca:</label>
+                            <p class="form-control-plaintext">{{ producto.marca|default:"No especificada" }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Modelo:</label>
+                            <p class="form-control-plaintext">{{ producto.modelo|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Factor de conversión:</label>
+                            <p class="form-control-plaintext">{{ producto.factor_conversion|floatformat:2 }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Unidad de compra:</label>
+                            <p class="form-control-plaintext">{{ producto.uom_compra }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Unidad de venta:</label>
+                            <p class="form-control-plaintext">{{ producto.uom_venta }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Precios y Costos -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-muted border-bottom pb-2"><i class="bi bi-currency-dollar"></i> Precios y Costos</h5>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Costo estándar:</label>
+                            <p class="form-control-plaintext">${{ producto.costo_estandar|floatformat:0|default:"0" }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Costo promedio:</label>
+                            <p class="form-control-plaintext">${{ producto.costo_promedio|floatformat:0|default:"0" }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Precio de venta:</label>
+                            <p class="form-control-plaintext">${{ producto.precio_venta|floatformat:0|default:"0" }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">IVA (%):</label>
+                            <p class="form-control-plaintext">{{ producto.impuesto_iva|floatformat:2 }}%</p>
+                        </div>
+                    </div>
+
+                    <!-- Inventario -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-muted border-bottom pb-2"><i class="bi bi-boxes"></i> Control de Inventario</h5>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Stock actual:</label>
+                            <p class="form-control-plaintext">{{ producto.stock|floatformat:0 }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Stock mínimo:</label>
+                            <p class="form-control-plaintext">{{ producto.stock_minimo }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Stock máximo:</label>
+                            <p class="form-control-plaintext">{{ producto.stock_maximo|default:"No definido" }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Punto de reorden:</label>
+                            <p class="form-control-plaintext">{{ producto.punto_reorden|default:"No definido" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Lote:</label>
+                            <p class="form-control-plaintext">{{ producto.lote|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Fecha de vencimiento:</label>
+                            <p class="form-control-plaintext">{{ producto.fecha_vencimiento|date:"d/m/Y"|default:"No especificada" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Configuraciones -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-muted border-bottom pb-2"><i class="bi bi-gear"></i> Configuraciones</h5>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Producto perecedero:</label>
+                            <p class="form-control-plaintext">
+                                {% if producto.perishable %}
+                                    <span class="badge text-bg-warning">Sí</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">No</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Control por lote:</label>
+                            <p class="form-control-plaintext">
+                                {% if producto.control_por_lote %}
+                                    <span class="badge text-bg-info">Sí</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">No</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Control por serie:</label>
+                            <p class="form-control-plaintext">
+                                {% if producto.control_por_serie %}
+                                    <span class="badge text-bg-info">Sí</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">No</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">URL de imagen:</label>
+                            <p class="form-control-plaintext">
+                                {% if producto.imagen_url %}
+                                    <a href="{{ producto.imagen_url }}" target="_blank">{{ producto.imagen_url }}</a>
+                                {% else %}
+                                    No especificada
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">URL ficha técnica:</label>
+                            <p class="form-control-plaintext">
+                                {% if producto.ficha_tecnica_url %}
+                                    <a href="{{ producto.ficha_tecnica_url }}" target="_blank">{{ producto.ficha_tecnica_url }}</a>
+                                {% else %}
+                                    No especificada
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Estado:</label>
+                            <p class="form-control-plaintext">
+                                <span class="badge {% if producto.estado == 'ACTIVO' %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+                                    {{ producto.estado }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'productos:productos_lista' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Lista
+                        </a>
+                        <div>
+                            {% if user.rol == 'ADMINISTRADOR' or user.puede_editar_productos %}
+                            <a href="{% url 'productos:producto_editar' producto.pk %}" class="btn btn-warning me-2">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            {% endif %}
+                            {% if user.rol == 'ADMINISTRADOR' or user.puede_desactivar_productos %}
+                            <button type="button" class="btn {% if producto.estado == 'ACTIVO' %}btn-outline-danger{% else %}btn-danger{% endif %}" 
+                                    onclick="confirmToggleState('{% url 'productos:producto_toggle_estado' producto.pk %}', '{{ producto.nombre }}', '{{ producto.estado }}', 'el producto')">
+                                <i class="bi bi-toggle-{% if producto.estado == 'ACTIVO' %}off{% else %}on{% endif %}"></i>
+                                {% if producto.estado == 'ACTIVO' %}Desactivar{% else %}Activar{% endif %}
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

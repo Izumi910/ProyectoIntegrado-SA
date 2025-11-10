@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Lista de Usuarios{% endblock %}
 {% block content %}
+{% csrf_token %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -9,7 +10,7 @@
             </a>
             <h2 class="d-inline mb-0"><i class="bi bi-people"></i> Usuarios</h2>
         </div>
-        <a href="{% url 'usuarios:usuarios_crear' %}" class="btn btn-success">
+        <a href="{% url 'usuarios:usuarios_crear' %}" class="btn btn-danger">
             <i class="bi bi-plus-circle"></i> Nuevo Usuario
         </a>
     </div>
@@ -18,7 +19,7 @@
     <div class="row mb-3">
         <div class="col-md-4">
             <form method="get" class="d-flex">
-                <input type="text" name="search" class="form-control" placeholder="Buscar usuarios..." value="{{ search }}">
+                <input type="text" id="searchInput" name="search" class="form-control" placeholder="Buscar usuarios..." value="{{ search }}">
                 <input type="hidden" name="order_by" value="{{ order_by }}">
                 <input type="hidden" name="per_page" value="{{ per_page }}">
                 <button type="submit" class="btn btn-outline-secondary ms-2">
@@ -40,29 +41,48 @@
                 <input type="hidden" name="per_page" value="{{ per_page }}">
             </form>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <form method="get">
                 <select name="per_page" class="form-select" onchange="this.form.submit()">
                     <option value="5" {% if per_page == '5' %}selected{% endif %}>5 por página</option>
-                    <option value="10" {% if per_page == '10' %}selected{% endif %}>10 por página</option>
-                    <option value="25" {% if per_page == '25' %}selected{% endif %}>25 por página</option>
-                    <option value="50" {% if per_page == '50' %}selected{% endif %}>50 por página</option>
+                    <option value="15" {% if per_page == '15' %}selected{% endif %}>15 por página</option>
+                    <option value="30" {% if per_page == '30' %}selected{% endif %}>30 por página</option>
                 </select>
                 <input type="hidden" name="search" value="{{ search }}">
                 <input type="hidden" name="order_by" value="{{ order_by }}">
             </form>
         </div>
+        {% if user.puede_exportar %}
+        <div class="col-md-1">
+            <a href="{% url 'usuarios:exportar_usuarios' %}?search={{ search }}&order_by={{ order_by }}" class="btn btn-outline-danger">
+                <i class="bi bi-file-earmark-excel"></i>
+            </a>
+        </div>
+        {% endif %}
     </div>
     
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-success">
+                <thead style="background: var(--lilis-red); color: white;">
                     <tr>
-                        <th scope="col">Username</th>
+                        <th scope="col">
+                            <a href="?order_by={% if order_by == 'username' %}-username{% else %}username{% endif %}&search={{ search }}&per_page={{ per_page }}" class="text-white text-decoration-none">
+                                Username {% if order_by == 'username' %}<i class="bi bi-arrow-up"></i>{% elif order_by == '-username' %}<i class="bi bi-arrow-down"></i>{% endif %}
+                            </a>
+                        </th>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Rol</th>
+                        <th scope="col">
+                            <a href="?order_by={% if order_by == 'email' %}-email{% else %}email{% endif %}&search={{ search }}&per_page={{ per_page }}" class="text-white text-decoration-none">
+                                Email {% if order_by == 'email' %}<i class="bi bi-arrow-up"></i>{% elif order_by == '-email' %}<i class="bi bi-arrow-down"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a href="?order_by={% if order_by == 'rol' %}-rol{% else %}rol{% endif %}&search={{ search }}&per_page={{ per_page }}" class="text-white text-decoration-none">
+                                Rol {% if order_by == 'rol' %}<i class="bi bi-arrow-up"></i>{% elif order_by == '-rol' %}<i class="bi bi-arrow-down"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th scope="col">Estado</th>
                         <th scope="col" class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -72,7 +92,16 @@
                         <td>{{ usuario.username }}</td>
                         <td>{{ usuario.nombres }} {{ usuario.apellidos }}</td>
                         <td>{{ usuario.email }}</td>
-                        <td>{{ usuario.rol }}</td>
+                        <td>
+                            <span class="badge {% if usuario.rol == 'ADMINISTRADOR' %}bg-danger{% elif 'GERENTE' in usuario.rol %}text-bg-danger{% elif 'SUPERVISOR' in usuario.rol %}text-bg-warning{% elif usuario.rol in 'OPERADOR_INVENTARIO,VENDEDOR,CONTADOR' %}text-bg-info{% else %}text-bg-secondary{% endif %}">
+                                {{ usuario.get_rol_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if usuario.estado == 'ACTIVO' %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+                                {{ usuario.estado }}
+                            </span>
+                        </td>
                         <td class="text-center">
                             <a href="{% url 'usuarios:usuarios_detalle' usuario.pk %}" class="btn btn-info btn-sm me-1" title="Ver">
                                 <i class="bi bi-eye"></i>
@@ -80,14 +109,19 @@
                             <a href="{% url 'usuarios:usuarios_editar' usuario.pk %}" class="btn btn-warning btn-sm me-1" title="Editar">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a href="{% url 'usuarios:usuarios_eliminar' usuario.pk %}" class="btn btn-danger btn-sm" title="Eliminar">
-                                <i class="bi bi-trash"></i>
+                            <a href="{% url 'usuarios:usuarios_gestionar_roles' usuario.pk %}" class="btn btn-info btn-sm me-1" title="Gestionar Roles">
+                                <i class="bi bi-person-gear"></i>
                             </a>
+                            <button type="button" class="btn {% if usuario.estado == 'ACTIVO' %}btn-outline-danger{% else %}btn-danger{% endif %} btn-sm" 
+                                    title="{% if usuario.estado == 'ACTIVO' %}Desactivar{% else %}Activar{% endif %}"
+                                    onclick="confirmToggleState('{% url 'usuarios:usuarios_toggle_estado' usuario.pk %}', '{{ usuario.username }}', '{{ usuario.estado }}', 'el usuario')">
+                                <i class="bi bi-toggle-{% if usuario.estado == 'ACTIVO' %}off{% else %}on{% endif %}"></i>
+                            </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+                        <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -124,4 +158,62 @@
     </nav>
     {% endif %}
 </div>
+
+<script>
+let searchTimeout;
+const searchInput = document.getElementById('searchInput');
+const tableBody = document.querySelector('tbody');
+const pagination = document.querySelector('nav');
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const searchTerm = this.value;
+        const orderBy = document.querySelector('[name="order_by"]').value;
+        const perPage = document.querySelector('[name="per_page"]').value;
+        
+        fetch(`?search=${encodeURIComponent(searchTerm)}&order_by=${orderBy}&per_page=${perPage}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update table
+            tableBody.innerHTML = '';
+            if (data.usuarios.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td></tr>';
+            } else {
+                data.usuarios.forEach(usuario => {
+                    const row = `
+                        <tr>
+                            <td>${usuario.username}</td>
+                            <td>${usuario.nombres} ${usuario.apellidos}</td>
+                            <td>${usuario.email}</td>
+                            <td><span class="badge ${usuario.rol_class}">${usuario.rol}</span></td>
+                            <td><span class="badge ${usuario.estado_class}">${usuario.estado}</span></td>
+                            <td class="text-center">
+                                <a href="/usuarios/${usuario.id}/" class="btn btn-info btn-sm me-1" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/usuarios/${usuario.id}/editar/" class="btn btn-warning btn-sm me-1" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="/usuarios/gestionar-roles/${usuario.id}/" class="btn btn-info btn-sm me-1" title="Gestionar Roles">
+                                    <i class="bi bi-person-gear"></i>
+                                </a>
+                                <a href="/usuarios/toggle-estado/${usuario.id}/" class="btn ${usuario.estado === 'ACTIVO' ? 'btn-outline-danger' : 'btn-danger'} btn-sm" title="${usuario.estado === 'ACTIVO' ? 'Desactivar' : 'Activar'}">
+                                    <i class="bi bi-toggle-${usuario.estado === 'ACTIVO' ? 'off' : 'on'}"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }, 300);
+});
+</script>
 {% endblock %}

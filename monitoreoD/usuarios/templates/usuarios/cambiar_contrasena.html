@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Cambiar Contraseña{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: var(--lilis-red); color: white;">
+                    <h4 class="mb-0"><i class="bi bi-key"></i> Cambiar Contraseña</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Requisitos de seguridad:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Mínimo 8 caracteres</li>
+                            <li>Al menos una letra mayúscula</li>
+                            <li>Al menos un número</li>
+                        </ul>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.old_password.label }} *</label>
+                            {{ form.old_password }}
+                            {% if form.old_password.errors %}
+                                <div class="text-danger small">{{ form.old_password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.new_password1.label }} *</label>
+                            {{ form.new_password1 }}
+                            {% if form.new_password1.errors %}
+                                <div class="text-danger small">{{ form.new_password1.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.new_password2.label }} *</label>
+                            {{ form.new_password2 }}
+                            {% if form.new_password2.errors %}
+                                <div class="text-danger small">{{ form.new_password2.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'usuarios:perfil' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver al Perfil
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Cambiar Contraseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación en tiempo real de la contraseña
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordField = document.querySelector('#id_new_password1');
+    const confirmField = document.querySelector('#id_new_password2');
+    
+    function validatePassword() {
+        const password = passwordField.value;
+        const requirements = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            number: /[0-9]/.test(password)
+        };
+        
+        // Cambiar color del borde según validación
+        if (password && (requirements.length && requirements.uppercase && requirements.number)) {
+            passwordField.classList.remove('is-invalid');
+            passwordField.classList.add('is-valid');
+        } else if (password) {
+            passwordField.classList.remove('is-valid');
+            passwordField.classList.add('is-invalid');
+        }
+    }
+    
+    function validateConfirm() {
+        const password = passwordField.value;
+        const confirm = confirmField.value;
+        
+        if (confirm && password === confirm) {
+            confirmField.classList.remove('is-invalid');
+            confirmField.classList.add('is-valid');
+        } else if (confirm) {
+            confirmField.classList.remove('is-valid');
+            confirmField.classList.add('is-invalid');
+        }
+    }
+    
+    passwordField.addEventListener('input', validatePassword);
+    confirmField.addEventListener('input', validateConfirm);
+});
+</script>
+{% endblock %}

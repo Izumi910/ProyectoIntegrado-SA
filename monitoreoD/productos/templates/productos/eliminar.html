@@ -1,10 +1,22 @@
 {% extends 'base.html' %}
 {% block title %}Eliminar Producto{% endblock %}
 {% block content %}
-<h2>¿Estás seguro de que deseas eliminar "{{ producto.nombre }}"?</h2>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a href="{% url 'productos:productos_lista' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="card">
+    <div class="card-body text-center">
+        <h2 class="card-title">Eliminar Producto</h2>
+        <p class="card-text">¿Estás seguro de que deseas eliminar el producto "{{ producto.nombre }}"?</p>
+        
+        <form method="post" style="display: none;">
+            {% csrf_token %}
+        </form>
+        
+        <button type="button" class="btn btn-danger me-2" 
+                onclick="confirmDelete('{% url 'productos:producto_eliminar' producto.pk %}', '{{ producto.nombre }}', 'el producto')">
+            <i class="bi bi-trash"></i> Eliminar
+        </button>
+        <a href="{% url 'productos:productos_lista' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Cancelar
+        </a>
+    </div>
+</div>
 {% endblock %}

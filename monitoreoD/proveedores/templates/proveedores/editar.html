@@ -1,11 +1,137 @@
 {% extends 'base.html' %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Editar Proveedor{% endblock %}
 {% block content %}
-<h2>{{ title }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="{% url 'proveedores:proveedores_lista' %}" class="btn btn-secondary">Volver</a>
-</form>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: var(--lilis-red); color: white;">
+                    <h4 class="mb-0"><i class="bi bi-truck"></i> Editar Proveedor: {{ proveedor.razon_social }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-building"></i> Información de la Empresa</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.rut_nif.label }} *</label>
+                                {{ form.rut_nif }}
+                                {% if form.rut_nif.errors %}<div class="text-danger small">{{ form.rut_nif.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.razon_social.label }} *</label>
+                                {{ form.razon_social }}
+                                {% if form.razon_social.errors %}<div class="text-danger small">{{ form.razon_social.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.nombre_fantasia.label }}</label>
+                                {{ form.nombre_fantasia }}
+                                {% if form.nombre_fantasia.errors %}<div class="text-danger small">{{ form.nombre_fantasia.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.sitio_web.label }}</label>
+                                {{ form.sitio_web }}
+                                {% if form.sitio_web.errors %}<div class="text-danger small">{{ form.sitio_web.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Información de Contacto -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-envelope"></i> Información de Contacto</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.email.label }} *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.telefono.label }}</label>
+                                {{ form.telefono }}
+                                {% if form.telefono.errors %}<div class="text-danger small">{{ form.telefono.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">{{ form.direccion.label }}</label>
+                                {{ form.direccion }}
+                                {% if form.direccion.errors %}<div class="text-danger small">{{ form.direccion.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.ciudad.label }}</label>
+                                {{ form.ciudad }}
+                                {% if form.ciudad.errors %}<div class="text-danger small">{{ form.ciudad.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.pais.label }}</label>
+                                {{ form.pais }}
+                                {% if form.pais.errors %}<div class="text-danger small">{{ form.pais.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.estado.label }} *</label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}<div class="text-danger small">{{ form.estado.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Contacto Principal -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-person"></i> Contacto Principal</h5>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.contacto_principal_nombre.label }}</label>
+                                {{ form.contacto_principal_nombre }}
+                                {% if form.contacto_principal_nombre.errors %}<div class="text-danger small">{{ form.contacto_principal_nombre.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.contacto_principal_email.label }}</label>
+                                {{ form.contacto_principal_email }}
+                                {% if form.contacto_principal_email.errors %}<div class="text-danger small">{{ form.contacto_principal_email.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.contacto_principal_telefono.label }}</label>
+                                {{ form.contacto_principal_telefono }}
+                                {% if form.contacto_principal_telefono.errors %}<div class="text-danger small">{{ form.contacto_principal_telefono.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Condiciones Comerciales -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-credit-card"></i> Condiciones Comerciales</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.condiciones_pago.label }} *</label>
+                                {{ form.condiciones_pago }}
+                                {% if form.condiciones_pago.errors %}<div class="text-danger small">{{ form.condiciones_pago.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.moneda.label }} *</label>
+                                {{ form.moneda }}
+                                {% if form.moneda.errors %}<div class="text-danger small">{{ form.moneda.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">{{ form.observaciones.label }}</label>
+                                {{ form.observaciones }}
+                                {% if form.observaciones.errors %}<div class="text-danger small">{{ form.observaciones.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'proveedores:proveedores_lista' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Actualizar Proveedor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

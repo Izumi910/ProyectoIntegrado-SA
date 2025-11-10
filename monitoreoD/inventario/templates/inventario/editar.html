@@ -1,11 +1,125 @@
 {% extends 'base.html' %}
 {% block title %}Editar Movimiento{% endblock %}
 {% block content %}
-<h2>Editar Movimiento de Inventario</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-    <a href="{% url 'inventario:inventario_lista' %}" class="btn btn-secondary">Volver</a>
-</form>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: var(--lilis-red); color: white;">
+                    <h4 class="mb-0"><i class="bi bi-clipboard-data"></i> Editar Movimiento #{{ movimiento.pk }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Información del Movimiento -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-arrow-left-right"></i> Información del Movimiento</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.tipo.label }} *</label>
+                                {{ form.tipo }}
+                                {% if form.tipo.errors %}<div class="text-danger small">{{ form.tipo.errors }}</div>{% endif %}
+                                <div class="form-text">Selecciona el tipo de movimiento que deseas registrar</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.cantidad.label }} *</label>
+                                {{ form.cantidad }}
+                                {% if form.cantidad.errors %}<div class="text-danger small">{{ form.cantidad.errors }}</div>{% endif %}
+                                <div class="form-text">Cantidad en unidades del producto</div>
+                            </div>
+                        </div>
+
+                        <!-- Producto y Proveedor -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-box"></i> Producto y Proveedor</h5>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">{{ form.producto.label }} *</label>
+                                {{ form.producto }}
+                                {% if form.producto.errors %}<div class="text-danger small">{{ form.producto.errors }}</div>{% endif %}
+                                <div class="form-text">Selecciona el producto para este movimiento</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.proveedor.label }}</label>
+                                {{ form.proveedor }}
+                                {% if form.proveedor.errors %}<div class="text-danger small">{{ form.proveedor.errors }}</div>{% endif %}
+                                <div class="form-text">Solo para ingresos</div>
+                            </div>
+                        </div>
+
+                        <!-- Control de Lotes y Series -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-tags"></i> Control de Lotes y Series</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.lote.label }}</label>
+                                {{ form.lote }}
+                                {% if form.lote.errors %}<div class="text-danger small">{{ form.lote.errors }}</div>{% endif %}
+                                <div class="form-text">Número de lote del producto (opcional)</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.serie.label }}</label>
+                                {{ form.serie }}
+                                {% if form.serie.errors %}<div class="text-danger small">{{ form.serie.errors }}</div>{% endif %}
+                                <div class="form-text">Número de serie del producto (opcional)</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.fecha_vencimiento.label }}</label>
+                                {{ form.fecha_vencimiento }}
+                                {% if form.fecha_vencimiento.errors %}<div class="text-danger small">{{ form.fecha_vencimiento.errors }}</div>{% endif %}
+                                <div class="form-text">Solo para productos perecederos</div>
+                            </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-chat-text"></i> Observaciones</h5>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">{{ form.observaciones.label }}</label>
+                                {{ form.observaciones }}
+                                {% if form.observaciones.errors %}<div class="text-danger small">{{ form.observaciones.errors }}</div>{% endif %}
+                                <div class="form-text">Comentarios adicionales sobre este movimiento</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'inventario:inventario_lista' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Actualizar Movimiento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mostrar/ocultar proveedor según el tipo de movimiento
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoSelect = document.querySelector('#id_tipo');
+    const proveedorDiv = document.querySelector('#id_proveedor').closest('.col-md-4');
+    
+    function toggleProveedor() {
+        if (tipoSelect.value === 'INGRESO') {
+            proveedorDiv.style.display = 'block';
+        } else {
+            proveedorDiv.style.display = 'none';
+            document.querySelector('#id_proveedor').value = '';
+        }
+    }
+    
+    tipoSelect.addEventListener('change', toggleProveedor);
+    toggleProveedor(); // Ejecutar al cargar
+});
+</script>
 {% endblock %}

@@ -17,13 +17,18 @@ Including another URLconf
 # monitoreo/urls.py
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
     path('productos/', include('productos.urls')),      # Todas las rutas de productos
     path('', include('usuarios.urls')),        # Todas las rutas de usuarios
     path('proveedores/', include('proveedores.urls')),  # Todas las rutas de proveedores
     path('inventario/', include('inventario.urls')),    # Todas las rutas de inventario
 ]
+
+# Servir archivos de media en desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

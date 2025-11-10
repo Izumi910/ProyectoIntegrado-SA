@@ -10,7 +10,7 @@ class MovimientoInventario(models.Model):
         ('DEVOLUCION', 'Devolución'),
         ('TRANSFERENCIA', 'Transferencia'),
     ]
-    fecha = models.DateTimeField(auto_now_add=True)
+    fecha = models.DateField()
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.PROTECT, blank=True, null=True)

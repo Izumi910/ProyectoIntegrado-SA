@@ -16,7 +16,7 @@ class Proveedor(models.Model):
     contacto_principal_nombre = models.CharField(max_length=120, blank=True, null=True)
     contacto_principal_email = models.EmailField(blank=True, null=True)
     contacto_principal_telefono = models.CharField(max_length=30, blank=True, null=True)
-    estado = models.CharField(max_length=10, choices=[('ACTIVO','ACTIVO'),('BLOQUEADO','BLOQUEADO')])
+    estado = models.CharField(max_length=20, choices=[('ACTIVO', 'ACTIVO'), ('INACTIVO', 'INACTIVO')], default='ACTIVO')
     observaciones = models.TextField(blank=True, null=True)
 
     def __str__(self):

@@ -1,20 +1,133 @@
 {% extends 'base.html' %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Crear Usuario{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h4>{{ title }}</h4>
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: var(--lilis-red); color: white;">
+                    <h4 class="mb-0"><i class="bi bi-person-plus"></i> Crear Nuevo Usuario</h4>
                 </div>
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        
+                        <!-- Información Personal -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-person"></i> Información Personal</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.telefono.label }}</label>
+                                {{ form.telefono }}
+                                {% if form.telefono.errors %}
+                                    <div class="text-danger small">{{ form.telefono.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Información de Acceso -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-key"></i> Información de Acceso</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.username.label }}</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger small">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.rol.label }}</label>
+                                {{ form.rol }}
+                                {% if form.rol.errors %}
+                                    <div class="text-danger small">{{ form.rol.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">{{ form.estado.label }}</label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}
+                                    <div class="text-danger small">{{ form.estado.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.password1.label }}</label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.password2.label }}</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Información Laboral -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-muted border-bottom pb-2"><i class="bi bi-building"></i> Información Laboral</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.area.label }}</label>
+                                {{ form.area }}
+                                {% if form.area.errors %}
+                                    <div class="text-danger small">{{ form.area.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    {{ form.mfa_habilitado }}
+                                    <label class="form-check-label" for="{{ form.mfa_habilitado.id_for_label }}">
+                                        {{ form.mfa_habilitado.label }}
+                                    </label>
+                                </div>
+                                {% if form.mfa_habilitado.errors %}
+                                    <div class="text-danger small">{{ form.mfa_habilitado.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">{{ form.observaciones.label }}</label>
+                                {{ form.observaciones }}
+                                {% if form.observaciones.errors %}
+                                    <div class="text-danger small">{{ form.observaciones.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success">Guardar</button>
-                            <a href="{% url 'usuarios:usuarios_lista' %}" class="btn btn-secondary">Volver</a>
+                            <a href="{% url 'usuarios:usuarios_lista' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Crear Usuario
+                            </button>
                         </div>
                     </form>
                 </div>

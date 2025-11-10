@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load usuario_extras %}
+{% block title %}Gestionar Roles - {{ usuario.username }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: var(--lilis-red); color: white;">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-gear"></i> Gestionar Roles - {{ usuario.username }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-person-circle text-muted" style="font-size: 5rem;"></i>
+                                <h5 class="mt-2">{{ usuario.first_name }} {{ usuario.last_name }}</h5>
+                                <p class="text-muted">{{ usuario.email }}</p>
+                                <span class="badge bg-danger">Rol Actual: {{ usuario.get_rol_display }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Seleccionar Nuevo Rol:</label>
+                                    <select name="rol" class="form-select" id="rolSelect" required>
+                                        {% for rol_code, rol_name in roles_disponibles %}
+                                            <option value="{{ rol_code }}" {% if usuario.rol == rol_code %}selected{% endif %}>
+                                                {{ rol_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h6 class="fw-bold">Permisos Personalizados:</h6>
+                                    {% if usuario.rol == 'ADMINISTRADOR' %}
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle"></i> <strong>Usuario Administrador:</strong> Tiene todos los permisos automáticamente y no pueden ser modificados.
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="border rounded p-3 bg-light">
+                                        {% for modulo, permisos in permisos_por_modulo.items %}
+                                        <div class="mb-3">
+                                            <h6 class="text-capitalize fw-bold 
+                                                {% if modulo == 'usuarios' %}text-danger
+                                                {% elif modulo == 'productos' %}text-primary
+                                                {% elif modulo == 'proveedores' %}text-success
+                                                {% elif modulo == 'inventario' %}text-warning
+                                                {% else %}text-info{% endif %}">
+                                                <i class="bi bi-{% if modulo == 'usuarios' %}people{% elif modulo == 'productos' %}box{% elif modulo == 'proveedores' %}truck{% elif modulo == 'inventario' %}clipboard-data{% else %}graph-up{% endif %}"></i>
+                                                {{ modulo|title }}
+                                            </h6>
+                                            <div class="row">
+                                                {% for permiso_code, permiso_nombre in permisos %}
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" 
+                                                               name="{{ permiso_code }}" 
+                                                               id="{{ permiso_code }}" 
+                                                               {% if usuario.rol == 'ADMINISTRADOR' %}checked disabled
+                                                               {% else %}{% if usuario|get_attr:permiso_code %}checked{% endif %}{% endif %}>
+                                                        <label class="form-check-label" for="{{ permiso_code }}">
+                                                            {{ permiso_nombre }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'usuarios:usuarios_lista' %}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Volver
+                                    </a>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger me-2" onclick="aplicarPermisosPorRol()">
+                                            <i class="bi bi-arrow-clockwise"></i> Aplicar Permisos del Rol
+                                        </button>
+                                        <input type="hidden" name="aplicar_permisos_rol" id="aplicar_permisos_rol" value="">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-check-circle"></i> Guardar Permisos
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function aplicarPermisosPorRol() {
+    const rol = document.getElementById('rolSelect').value;
+    
+    // Limpiar todos los permisos
+    document.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = false);
+    
+    // Aplicar permisos según el rol
+    if (rol === 'ADMINISTRADOR') {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+    } else if (rol.includes('GERENTE')) {
+        ['puede_ver_productos', 'puede_crear_productos', 'puede_editar_productos', 'puede_desactivar_productos',
+         'puede_ver_proveedores', 'puede_crear_proveedores', 'puede_editar_proveedores', 'puede_desactivar_proveedores',
+         'puede_ver_inventario', 'puede_crear_inventario', 'puede_editar_inventario',
+         'puede_exportar_productos', 'puede_exportar_proveedores', 'puede_exportar_inventario',
+         'puede_ver_reportes'].forEach(id => {
+            const cb = document.getElementById(id);
+            if (cb && !cb.disabled) cb.checked = true;
+        });
+    } else if (rol.includes('SUPERVISOR')) {
+        ['puede_ver_productos', 'puede_crear_productos', 'puede_editar_productos',
+         'puede_ver_proveedores', 'puede_ver_inventario', 'puede_crear_inventario', 'puede_editar_inventario',
+         'puede_exportar_inventario'].forEach(id => {
+            const cb = document.getElementById(id);
+            if (cb && !cb.disabled) cb.checked = true;
+        });
+    } else {
+        ['puede_ver_productos', 'puede_ver_inventario'].forEach(id => {
+            const cb = document.getElementById(id);
+            if (cb && !cb.disabled) cb.checked = true;
+        });
+    }
+    
+    // Marcar que se deben aplicar permisos del rol
+    document.getElementById('aplicar_permisos_rol').value = '1';
+}
+</script>
+{% endblock %}

@@ -127,6 +127,12 @@ class Migration(migrations.Migration):
             name='lote',
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
+        migrations.RunPython(
+            code=lambda apps, schema_editor: apps.get_model('productos', 'Categoria').objects.get_or_create(
+                id=1, defaults={'nombre': 'General'}
+            ) if apps.get_model('productos', 'Categoria').objects.filter(id=1).exists() is False else None,
+            reverse_code=migrations.RunPython.noop,
+        ),
         migrations.AddField(
             model_name='producto',
             name='categoria',

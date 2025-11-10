@@ -39,6 +39,7 @@ class Producto(models.Model):
     stock = models.IntegerField(default=0)
     lote = models.CharField(max_length=50, blank=True, null=True)
     fecha_vencimiento = models.DateField(blank=True, null=True)
+    estado = models.CharField(max_length=20, choices=[('ACTIVO', 'ACTIVO'), ('INACTIVO', 'INACTIVO')], default='ACTIVO')
     
     @property
     def stock_actual(self):

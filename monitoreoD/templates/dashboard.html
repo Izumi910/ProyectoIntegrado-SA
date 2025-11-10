@@ -7,6 +7,13 @@
         Bienvenido a Lilis Dulcería
     </h1>
     <p class="lead text-muted">Sistema de Gestión Integral</p>
+    <div class="alert alert-info">
+        <i class="bi bi-person-badge"></i> 
+        Conectado como: <strong>{{ user.get_full_name|default:user.username }}</strong> 
+        <span class="badge {% if user.rol == 'ADMINISTRADOR' %}bg-danger{% elif user.rol == 'EDITOR' %}bg-warning{% else %}bg-info{% endif %} ms-2">
+            {{ user.get_rol_display }}
+        </span>
+    </div>
 </div>
 
 <div class="row g-4">
@@ -52,6 +59,7 @@
         </div>
     </div>
 
+    {% if user.puede_gestionar_usuarios %}
     <div class="col-lg-3 col-md-6">
         <div class="card h-100">
             <div class="card-header" style="background: var(--lilis-red); color: white;">
@@ -65,6 +73,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 
 <div class="row mt-5">
