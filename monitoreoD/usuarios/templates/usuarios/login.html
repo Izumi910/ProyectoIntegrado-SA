@@ -72,6 +72,13 @@
                             {% endfor %}
                         {% endif %}
                         
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.
+                            </div>
+                        {% endif %}
+                        
                         <form method="post">
                             {% csrf_token %}
                             <div class="mb-3">

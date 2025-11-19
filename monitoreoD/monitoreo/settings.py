@@ -172,11 +172,15 @@ SESSION_COOKIE_SECURE = False # en producción con HTTPS
 SESSION_COOKIE_SAMESITE = 'Lax' # o 'Strict'/'None'(+Secure)
 
 # Configuración de Email para recuperación de contraseña
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Para desarrollo
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Para producción
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'tu-email@gmail.com'
-# EMAIL_HOST_PASSWORD = 'tu-contraseña-de-aplicación'
-DEFAULT_FROM_EMAIL = 'noreply@lilis.com'
+# Para desarrollo local
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # Para producción con Amazon SES
+    EMAIL_BACKEND = 'django_ses.SESBackend'
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION', 'us-east-1')
+    AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@lilis.com')

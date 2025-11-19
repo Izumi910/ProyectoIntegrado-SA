@@ -33,33 +33,52 @@ def password_reset_request(request):
             email = form.cleaned_data['email']
             try:
                 usuario = Usuario.objects.get(email=email)
+                # Generar token de recuperación
+                from django.contrib.auth.tokens import default_token_generator
+                from django.utils.http import urlsafe_base64_encode
+                from django.utils.encoding import force_bytes
+                from django.urls import reverse
+                
+                token = default_token_generator.make_token(usuario)
+                uid = urlsafe_base64_encode(force_bytes(usuario.pk))
+                
+                # Construir URL de recuperación
+                reset_url = request.build_absolute_uri(
+                    reverse('usuarios:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+                )
+                
                 # Enviar email con instrucciones
                 subject = 'Recuperación de Contraseña - Lilis Dulcería'
-                message = f'''Hola {usuario.username},
+                message = f'''Hola {usuario.first_name or usuario.username},
 
 Has solicitado recuperar tu contraseña para el sistema de Lilis Dulcería.
 
-Sigue estas instrucciones:
+Haz clic en el siguiente enlace para restablecer tu contraseña:
+{reset_url}
 
-1. Contacta al administrador del sistema para solicitar el cambio de contraseña
-2. Proporciona tu nombre de usuario: {usuario.username}
+Este enlace es válido por 24 horas.
 
 Si no solicitaste este cambio, ignora este mensaje.
 
 Saludos,
 Equipo de Lilis Dulcería'''
                 
-                send_mail(
-                    subject,
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                    fail_silently=False,
-                )
-                messages.success(request, 'Se han enviado las instrucciones a tu email.')
-                return redirect('usuarios:login')
+                try:
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [email],
+                        fail_silently=False,
+                    )
+                    messages.success(request, 'Se han enviado las instrucciones de recuperación a tu email.')
+                    return redirect('usuarios:password_reset_done')
+                except Exception as e:
+                    messages.error(request, f'Error al enviar el email: {str(e)}')
             except Usuario.DoesNotExist:
-                messages.error(request, 'No existe un usuario con ese email.')
+                # Por seguridad, no revelamos si el email existe o no
+                messages.success(request, 'Si el email existe en nuestro sistema, recibirás las instrucciones de recuperación.')
+                return redirect('usuarios:password_reset_done')
     else:
         form = PasswordResetForm()
     

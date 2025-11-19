@@ -126,7 +126,7 @@ class PerfilUsuarioForm(forms.ModelForm):
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
-        if avatar:
+        if avatar and hasattr(avatar, 'content_type'):
             if avatar.size > 2 * 1024 * 1024:  # 2MB
                 raise ValidationError('La imagen no puede superar los 2MB.')
             if not avatar.content_type.startswith('image/'):
