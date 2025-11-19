@@ -34,7 +34,6 @@ class UsuarioCreationForm(UserCreationForm):
             'class': 'form-control', 
             'placeholder': 'Confirma la contraseña'
         })
-        self.fields['estado'].choices = [('ACTIVO', 'Activo'), ('INACTIVO', 'Inactivo')]
         self.fields['password1'].label = 'Contraseña'
         self.fields['password2'].label = 'Confirmar contraseña'
         self.fields['first_name'].label = 'Nombres'
@@ -45,15 +44,22 @@ class UsuarioCreationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data['email']
+        # Validar formato de email más estricto
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            raise forms.ValidationError("Formato de email inválido.")
+        
         if Usuario.objects.filter(email=email).exists():
             raise forms.ValidationError("Este email ya está registrado.")
         return email
 
     def clean_telefono(self):
         telefono = self.cleaned_data.get('telefono')
-        if telefono is not None:
-            if telefono < 0:
-                raise forms.ValidationError("El teléfono no puede ser negativo.")
+        if telefono:
+            # Validar formato de teléfono
+            telefono_limpio = re.sub(r'[^0-9+]', '', telefono)
+            if not re.match(r'^\+?[0-9]{8,15}$', telefono_limpio):
+                raise forms.ValidationError("Formato de teléfono inválido. Use +56912345678")
         return telefono
 
     def clean_area(self):
@@ -83,7 +89,6 @@ class UsuarioChangeForm(UserChangeForm):
         super().__init__(*args, **kwargs)
         if 'password' in self.fields:
             del self.fields['password']
-        self.fields['estado'].choices = [('ACTIVO', 'Activo'), ('INACTIVO', 'Inactivo')]
         self.fields['first_name'].label = 'Nombres'
         self.fields['last_name'].label = 'Apellidos'
         self.fields['username'].label = 'Nombre de usuario'
@@ -92,9 +97,11 @@ class UsuarioChangeForm(UserChangeForm):
 
     def clean_telefono(self):
         telefono = self.cleaned_data.get('telefono')
-        if telefono is not None:
-            if telefono < 0:
-                raise forms.ValidationError("El teléfono no puede ser negativo.")
+        if telefono:
+            # Validar formato de teléfono
+            telefono_limpio = re.sub(r'[^0-9+]', '', telefono)
+            if not re.match(r'^\+?[0-9]{8,15}$', telefono_limpio):
+                raise forms.ValidationError("Formato de teléfono inválido. Use +56912345678")
         return telefono
 
     def clean_area(self):
@@ -129,8 +136,26 @@ class PerfilUsuarioForm(forms.ModelForm):
         if avatar and hasattr(avatar, 'content_type'):
             if avatar.size > 2 * 1024 * 1024:  # 2MB
                 raise ValidationError('La imagen no puede superar los 2MB.')
-            if not avatar.content_type.startswith('image/'):
-                raise ValidationError('El archivo debe ser una imagen.')
+            
+            # Validar tipo MIME real
+            try:
+                import magic
+                avatar.seek(0)
+                file_type = magic.from_buffer(avatar.read(1024), mime=True)
+                avatar.seek(0)
+                if not file_type.startswith('image/'):
+                    raise ValidationError('El archivo debe ser una imagen válida.')
+            except ImportError:
+                # Fallback si python-magic no está disponible
+                if not avatar.content_type.startswith('image/'):
+                    raise ValidationError('El archivo debe ser una imagen.')
+            
+            # Validar extensiones permitidas
+            import os
+            ext = os.path.splitext(avatar.name)[1].lower()
+            if ext not in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
+                raise ValidationError('Formato de imagen no permitido.')
+                
         return avatar
 
 class CambiarContrasenaForm(PasswordChangeForm):

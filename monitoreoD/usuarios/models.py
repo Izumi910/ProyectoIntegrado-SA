@@ -18,13 +18,24 @@ class Usuario(AbstractUser):
         ('LECTOR', 'Solo Lectura'),
     ]
     
+    ESTADOS = [
+        ('ACTIVO', 'Activo'),
+        ('INACTIVO', 'Inactivo'),
+    ]
+    
     telefono = models.CharField(max_length=30, blank=True, null=True)
-    estado = models.CharField(max_length=20, default="ACTIVO")
+    estado = models.CharField(max_length=20, choices=ESTADOS, default="ACTIVO")
     mfa_habilitado = models.BooleanField(default=False)
     ultimo_acceso = models.DateTimeField(auto_now=True)
     area = models.CharField(max_length=100, blank=True, null=True)
     observaciones = models.TextField(blank=True, null=True)
     rol = models.CharField(max_length=30, choices=ROLES, default='LECTOR')
+    
+    # Seguridad de sesión
+    last_session_key = models.CharField(max_length=40, blank=True, null=True)
+    last_login_ip = models.GenericIPAddressField(blank=True, null=True)
+    failed_login_attempts = models.IntegerField(default=0)
+    account_locked_until = models.DateTimeField(blank=True, null=True)
     avatar = models.ImageField(
         upload_to=user_avatar_path,
         blank=True,

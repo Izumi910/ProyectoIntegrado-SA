@@ -13,9 +13,75 @@ from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from .decorators import requiere_permiso
+# from django_ratelimit.decorators import ratelimit
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from datetime import datetime
+import logging
+
+security_logger = logging.getLogger('security')
+
+# @ratelimit(key='ip', rate='5/m', method='POST', block=True)
+def custom_login_view(request):
+    from django.contrib.auth import authenticate, login
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        try:
+            user_obj = Usuario.objects.get(username=username)
+            
+            # Verificar si la cuenta está bloqueada
+            if user_obj.account_locked_until and user_obj.account_locked_until > timezone.now():
+                tiempo_restante = (user_obj.account_locked_until - timezone.now()).seconds // 60
+                security_logger.warning(f'Intento de login con cuenta bloqueada: {username}')
+                messages.error(request, f'Cuenta bloqueada temporalmente. Intenta en {tiempo_restante} minutos.')
+                return render(request, 'usuarios/login.html')
+            
+            # Si el bloqueo expiró, resetear
+            if user_obj.account_locked_until and user_obj.account_locked_until <= timezone.now():
+                user_obj.failed_login_attempts = 0
+                user_obj.account_locked_until = None
+                user_obj.save(update_fields=['failed_login_attempts', 'account_locked_until'])
+                
+        except Usuario.DoesNotExist:
+            pass
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            if user.estado == 'ACTIVO':
+                login(request, user)
+                security_logger.info(f'Login exitoso para {username} desde {request.META.get("REMOTE_ADDR")}')
+                return redirect('usuarios:dashboard')
+            else:
+                security_logger.warning(f'Intento de login con usuario inactivo: {username}')
+                messages.error(request, 'Tu cuenta está desactivada. Contacta al administrador.')
+        else:
+            # Incrementar intentos fallidos
+            try:
+                user_obj = Usuario.objects.get(username=username)
+                user_obj.failed_login_attempts += 1
+                
+                # Bloquear cuenta después de 5 intentos fallidos
+                if user_obj.failed_login_attempts >= 5:
+                    user_obj.account_locked_until = timezone.now() + timedelta(minutes=15)
+                    user_obj.save(update_fields=['failed_login_attempts', 'account_locked_until'])
+                    security_logger.warning(f'Cuenta bloqueada por intentos fallidos: {username}')
+                    messages.error(request, 'Cuenta bloqueada por múltiples intentos fallidos. Intenta en 15 minutos.')
+                else:
+                    user_obj.save(update_fields=['failed_login_attempts'])
+                    intentos_restantes = 5 - user_obj.failed_login_attempts
+                    security_logger.warning(f'Login fallido para {username} ({user_obj.failed_login_attempts}/5)')
+                    messages.error(request, f'Usuario o contraseña incorrectos. Intentos restantes: {intentos_restantes}')
+            except Usuario.DoesNotExist:
+                security_logger.warning(f'Login fallido para usuario inexistente: {username}')
+                messages.error(request, 'Usuario o contraseña incorrectos.')
+    
+    return render(request, 'usuarios/login.html')
 
 @login_required
 def dashboard(request):
@@ -26,6 +92,7 @@ class PasswordResetForm(forms.Form):
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingresa tu email'})
     )
 
+# @ratelimit(key='ip', rate='3/m', method='POST', block=True)
 def password_reset_request(request):
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
